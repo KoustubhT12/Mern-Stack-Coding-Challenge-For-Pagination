@@ -3,8 +3,10 @@ import TableView from './Pages/TableView';
 function App() {
 
   return (
-
-       <TableView />
+    <div>
+      <TableView />
+    </div>
+       
 
   )
 }

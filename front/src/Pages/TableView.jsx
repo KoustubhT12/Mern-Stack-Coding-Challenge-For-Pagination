@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+
 const TableView = () => {
     const [page, setPage] = useState(1);
     const [pros, setPros] = useState([]);
     const [total, setTotal] = useState(0);
     const [search, setSearch] = useState('');
+    const [loading,setLoading] = useState(true);
+    const [pronofo,setpronofo] = useState(false);
+    let content;               // ------------- Dynamic content
+
+
+
+
+
+
+
 
     useEffect(() => {
         const getter = async () => {
@@ -17,6 +28,8 @@ const TableView = () => {
                         return item.title.toLowerCase().includes(search.toLowerCase())
                     });
                     setPros(UFpros);
+                    setLoading(false)
+                    setpronofo(true);
                     return
 
                 }
@@ -27,11 +40,50 @@ const TableView = () => {
                 setPros(Fpros);
                 setTotal(t);
             } catch (error) {
-                console.log(error.message);
+                alert("Cannot connect to server")
             }
         };
         getter();
     }, [page,search]);
+
+// ------------------------------------------------------------DYNAMIC CONTENT RENDER--------------
+      if(pros.length>0){
+        content = pros.map((item, index) => (
+            <tr key={index}>
+                <td className="px-2 py-2 text-gray-900">{item.id}</td>
+                <td className="px-2 py-2 text-gray-900">{item.title}</td>
+                <td className="px-2 py-2 text-gray-600">{item.description}</td>
+                <td className="px-2 py-2 text-gray-600">$ {item.price}</td>
+                <td className="px-2 py-2 text-gray-600">{item.category}</td>
+                <td className="px-2 py-2 text-gray-600">{item.dateOfSale.split('T')[0]}</td>
+            </tr>
+        )) }
+        else if(pronofo){
+            content = (
+            <tr>
+                <td colSpan={6}>
+                    <div className="flex justify-center items-center h-48">
+                        <p className="text-lg font-semibold text-green-500 inline-block typing" >No Products found</p>
+                    </div>
+                </td>
+            </tr> 
+            );
+      }
+      else{
+        content = (
+        <tr>
+                <td colSpan={6}>
+                    <div className="flex justify-center items-center h-48">
+                        <p className="text-lg font-semibold text-green-500 inline-block typing" >Loading...</p>
+                    </div>
+                </td>
+            </tr> 
+        );
+      }
+ 
+
+//---------------------------------------DYNAMIC CONTENT RENDER 
+
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -55,30 +107,21 @@ const TableView = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {pros.map((item, index) => (
-                            <tr key={index}>
-                                <td className="px-4 py-2 text-gray-900">{item.id}</td>
-                                <td className="px-4 py-2 text-gray-900">{item.title}</td>
-                                <td className="px-4 py-2 text-gray-600">{item.description}</td>
-                                <td className="px-4 py-2 text-gray-600">$ {item.price}</td>
-                                <td className="px-4 py-2 text-gray-600">{item.category}</td>
-                                <td className="px-4 py-2 text-gray-600">{item.dateOfSale.split('T')[0]}</td>
-                            </tr>
-                        ))}
+                        {content}
                     </tbody>
                 </table>
 
                 <div className="flex justify-between items-center mt-4">
                     <button
                         onClick={() => setPage(page > 1 ? page - 1 : 1)}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-xs"
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded text-xs"
                     >
                         Previous Page
                     </button>
                     <span className="text-sm text-gray-600">Page {page} of {total}</span>
                     <button
                         onClick={() => setPage(page < total ? page + 1 : total)}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-xs"
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded text-xs"
                     >
                         Next Page
                     </button>
